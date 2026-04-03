@@ -13,7 +13,7 @@ class Database
     {
         $this->host = getenv('MYSQLHOST') ?: getenv('DB_HOST') ?: 'localhost';
         $this->port = getenv('MYSQLPORT') ?: getenv('DB_PORT') ?: '3306';
-        $this->db_name = getenv('MYSQLDATABASE') ?: getenv('DB_NAME') ?: 'h2zero_inventory';
+        $this->db_name = getenv('MYSQLDATABASE') ?: getenv('DB_NAME') ?: 'railway';
         $this->username = getenv('MYSQLUSER') ?: getenv('DB_USER') ?: 'root';
         $mysqlPassword = getenv('MYSQLPASSWORD');
         $this->password = $mysqlPassword !== false
