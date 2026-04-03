@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Stocks - H2Zero</title>
+  <link rel="stylesheet" href="../assets/css/ui-modern.css">
+  <style>
+    .stocks-form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      color: #dfe7f5;
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #ffffff;
+      padding: 0 14px;
+    }
+
+    .field select option {
+      color: #ffffff;
+      background: #14233f;
+    }
+
+    .stocks-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .status-ok {
+      color: #7ee787;
+      font-weight: 700;
+    }
+
+    .status-low {
+      color: #ffd166;
+      font-weight: 700;
+    }
+
+    .status-out {
+      color: #ff7b7b;
+      font-weight: 700;
+    }
+
+    .pagination-controls {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1000px) {
+      .stocks-form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-card">
+        <div class="brand-logo-wrap">
+          <img src="../assets/images/h2zero-logo.jpg" alt="H2Zero Logo">
+        </div>
+        <div>
+          <h2 class="brand-title">Norland</h2>
+          <p class="brand-subtitle">Bottling Inc.</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+  <a class="nav-link" href="dashboard.html"><span class="nav-label">Dashboard</span></a>
+  <a class="nav-link" href="inventory.html"><span class="nav-label">Inventory Form</span></a>
+  <a class="nav-link" href="reports.html"><span class="nav-label">Inventory Overview</span></a>
+  <a class="nav-link active" href="stocks.html"><span class="nav-label">Stocks Form</span></a>
+  <a class="nav-link" href="stocks-overview.html"><span class="nav-label">Stocks Overview</span></a>
+  <a class="nav-link" href="create-staff.html"><span class="nav-label">Create Staff</span></a>
+</nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <img src="../assets/images/h2zero-logo.jpg" alt="H2Zero Logo" class="topbar-logo">
+          <p class="topbar-title">Norland Inventory Management System</p>
+        </div>
+        <div class="user-pill" id="userPill">Admin</div>
+      </div>
+
+      <div class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Stocks</h1>
+            <p class="page-subtitle">Manage product stocks.</p>
+          </div>
+          <div class="role-chip" id="userRoleText">Admin</div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Add Stock</h2>
+              <p class="panel-subtitle">Save available stock per product and size.</p>
+            </div>
+          </div>
+
+          <div class="stocks-form-grid">
+            <div class="field">
+  <label for="productName">Product</label>
+  <div style="display:flex; gap:8px;">
+    <select id="productName" style="flex:1;">
+      <option value="">Select product</option>
+    </select>
+    <button class="btn btn-secondary" id="addProductOptionBtn" type="button">+</button>
+    <button class="btn btn-danger" id="removeProductOptionBtn" type="button">-</button>
+  </div>
+</div>
+
+            <div class="field">
+              <label for="sizeLabel">Size</label>
+              <select id="sizeLabel">
+                <option value="">Select size</option>
+                <option value="350 ml">350 ml</option>
+                <option value="500 ml">500 ml</option>
+                <option value="1000 ml">1000 ml</option>
+                <option value="1500 ml">1500 ml</option>
+                <option value="4000 ml">4000 ml</option>
+                <option value="6000 ml">6000 ml</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="stockQty">Quantity</label>
+              <input type="number" id="stockQty" min="1" placeholder="Enter quantity">
+            </div>
+          </div>
+
+          <div class="stocks-actions">
+            <button class="btn btn-primary" id="saveStockBtn" type="button">Save Stock</button>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:18px;">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Current Stocks</h2>
+              <p class="panel-subtitle">Available remaining quantities.</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="modern-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Size</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="stocksTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="pagination-controls">
+            <button class="btn btn-secondary" id="prevStocksBtn" type="button">Prev</button>
+            <span class="mini-label" id="stocksPageLabel">Page 1 of 1</span>
+            <button class="btn btn-secondary" id="nextStocksBtn" type="button">Next</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="productModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Add Product</h3>
+      <button type="button" class="modal-close-btn" id="closeProductModal">&times;</button>
+    </div>
+
+    <div class="form-group">
+      <label for="newProductName">Product Name</label>
+      <input type="text" id="newProductName" placeholder="Enter product name">
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="cancelProductModal">Cancel</button>
+      <button type="button" class="btn btn-primary" id="saveProductModal">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="removeProductModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Remove Product</h3>
+      <button type="button" class="modal-close-btn" id="closeRemoveProductModal">&times;</button>
+    </div>
+
+    <p id="removeProductText" style="color:#dfe7f5; margin:0 0 16px;">
+      Are you sure you want to remove this product?
+    </p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="cancelRemoveProductModal">Cancel</button>
+      <button type="button" class="btn btn-danger" id="confirmRemoveProductModal">Remove</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editStockModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Edit Stock</h3>
+      <button type="button" class="modal-close-btn" id="closeEditStockModal">&times;</button>
+    </div>
+
+    <div class="form-group">
+      <label>Product</label>
+      <input type="text" id="editStockProduct" readonly>
+    </div>
+
+    <div class="form-group">
+      <label>Size</label>
+      <input type="text" id="editStockSize" readonly>
+    </div>
+
+    <div class="form-group">
+      <label>Quantity</label>
+      <input type="number" id="editStockQuantity" min="0">
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="cancelEditStockModal">Cancel</button>
+      <button type="button" class="btn btn-primary" id="saveEditStockModal">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteStockModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Delete Stock</h3>
+      <button type="button" class="modal-close-btn" id="closeDeleteStockModal">&times;</button>
+    </div>
+
+    <p id="deleteStockText" style="color:#dfe7f5; margin:0 0 16px;"></p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="cancelDeleteStockModal">Cancel</button>
+      <button type="button" class="btn btn-danger" id="confirmDeleteStockModal">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="messageModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="messageModalTitle">Notice</h3>
+      <button type="button" class="modal-close-btn" id="closeMessageModal">&times;</button>
+    </div>
+
+    <p id="messageModalText" style="color:#dfe7f5; margin:0 0 16px;"></p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" id="okMessageModal">OK</button>
+    </div>
+  </div>
+</div>
+
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/admin-stocks.js"></script>
+</body>
+</html>

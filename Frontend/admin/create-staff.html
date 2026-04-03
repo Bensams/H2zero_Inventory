@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Staff - H2Zero</title>
+  <link rel="stylesheet" href="../assets/css/ui-modern.css">
+  <style>
+    .create-staff-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .staff-form-card .form-group {
+      margin-bottom: 14px;
+    }
+
+    .staff-form-card label {
+      display: block;
+      margin-bottom: 8px;
+      color: #dfe7f5;
+      font-weight: 700;
+    }
+
+    .staff-form-card input,
+    .staff-form-card select {
+      width: 100%;
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #ffffff;
+      padding: 0 14px;
+    }
+
+    .staff-form-card select option {
+      color: #ffffff;
+      background: #14233f;
+    }
+
+    .staff-submit-wrap {
+      margin-top: 10px;
+    }
+
+    .table-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 0 18px 14px;
+      flex-wrap: wrap;
+    }
+
+    .table-topbar .mini-title {
+      color: #dfe7f5;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .table-search {
+      width: 280px;
+      max-width: 100%;
+      height: 40px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #ffffff;
+      padding: 0 14px;
+    }
+
+    .compact-table th,
+    .compact-table td {
+      padding: 10px 12px !important;
+      font-size: 14px;
+    }
+
+    .compact-table th {
+      font-size: 12px !important;
+    }
+
+    .table-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: #ffffff;
+}
+
+.icon-btn-edit {
+  background: linear-gradient(135deg, #36cfc9, #2aa7c8);
+}
+
+.icon-btn-edit:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.icon-btn-reset {
+  background: linear-gradient(135deg, #5c6f91, #425675);
+}
+
+.icon-btn-reset:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.icon-btn-delete {
+  background: linear-gradient(135deg, #6d3a56, #53314b);
+}
+
+.icon-btn-delete:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+    .pagination-controls {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .table-input {
+      width: 100%;
+      min-width: 90px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #ffffff;
+      padding: 0 10px;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 16, 35, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(180deg, #243554 0%, #1b2a47 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      padding: 22px;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: #ffffff;
+    }
+
+    .modal-close-btn {
+      border: none;
+      background: transparent;
+      color: #ffffff;
+      font-size: 28px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #dfe7f5;
+      font-weight: 700;
+    }
+
+    .form-group input {
+      width: 100%;
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #ffffff;
+      padding: 0 14px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    @media (max-width: 1200px) {
+      .create-staff-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-card">
+        <div class="brand-logo-wrap">
+          <img src="../assets/images/h2zero-logo.jpg" alt="H2Zero Logo">
+        </div>
+        <div>
+          <h2 class="brand-title">Norland</h2>
+          <p class="brand-subtitle">Bottling Inc.</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-link" href="dashboard.html"><span class="nav-label">Dashboard</span></a>
+        <a class="nav-link" href="inventory.html"><span class="nav-label">Inventory Form</span></a>
+        <a class="nav-link" href="reports.html"><span class="nav-label">Inventory Overview</span></a>
+        <a class="nav-link" href="stocks.html"><span class="nav-label">Stocks Form</span></a>
+        <a class="nav-link" href="stocks-overview.html"><span class="nav-label">Stocks Overview</span></a>
+        <a class="nav-link active" href="create-staff.html"><span class="nav-label">Create Staff</span></a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <img src="../assets/images/h2zero-logo.jpg" alt="H2Zero Logo" class="topbar-logo">
+          <p class="topbar-title">Norland Inventory Management System.</p>
+        </div>
+        <div class="user-pill" id="userPill">Admin</div>
+      </div>
+
+      <div class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Create Staff</h1>
+            <p class="page-subtitle">Create staff accounts and review registered staff on the right side.</p>
+          </div>
+          <div class="role-chip" id="userRoleText">Admin</div>
+        </div>
+
+        <div class="create-staff-grid">
+          <div class="panel staff-form-card">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Create Staff Account</h2>
+                <p class="panel-subtitle">Only admin can create staff accounts.</p>
+              </div>
+            </div>
+
+            <form id="createStaffForm" style="padding:18px;">
+              <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" required>
+              </div>
+
+              <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" min="1" max="120">
+              </div>
+
+              <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender">
+                  <option value="">Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="staff_username">Staff Gmail</label>
+                <input type="text" id="staff_username" required>
+              </div>
+
+              <div class="form-group">
+                <label for="staff_password">Password</label>
+                <input type="password" id="staff_password" required>
+              </div>
+
+              <div class="staff-submit-wrap">
+                <button class="btn btn-primary" type="submit" style="width:100%;">Create Staff Account</button>
+              </div>
+
+              <p id="createStaffMessage" style="margin-top:14px;font-weight:700;"></p>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Registered Staff</h2>
+                <p class="panel-subtitle">Latest created staff appears at the top. Use search for quick tracking.</p>
+              </div>
+            </div>
+
+            <div class="table-topbar">
+              <div class="mini-title">Latest registered first</div>
+              <input type="text" id="staffSearch" class="table-search" placeholder="Search name, gmail, gender...">
+            </div>
+
+            <div class="table-wrap">
+              <table class="modern-table compact-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Staff Gmail</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Date Registered</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="staffTableBody"></tbody>
+              </table>
+            </div>
+
+            <div class="pagination-controls">
+              <button class="btn btn-secondary" id="prevStaffBtn" type="button">Prev</button>
+              <span class="mini-label" id="staffPageLabel">Page 1 of 1</span>
+              <button class="btn btn-secondary" id="nextStaffBtn" type="button">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="resetPasswordModal" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Reset Staff Password</h3>
+        <button type="button" class="modal-close-btn" id="closeResetPasswordModal">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label for="resetPasswordInput">New Password</label>
+        <input type="password" id="resetPasswordInput" placeholder="Enter new password">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelResetPasswordModal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="saveResetPasswordModal">Save Password</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="editStaffModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Edit Staff</h3>
+      <button type="button" class="modal-close-btn" id="closeEditStaffModal">&times;</button>
+    </div>
+
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="editStaffName">
+    </div>
+
+    <div class="form-group">
+      <label>Gmail</label>
+      <input type="email" id="editStaffEmail">
+    </div>
+
+    <div class="form-group">
+      <label>Gender</label>
+      <select id="editStaffGender" class="table-input">
+        <option value="">Select gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Age</label>
+      <input type="number" id="editStaffAge" min="1" max="120">
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="cancelEditStaffModal">Cancel</button>
+      <button type="button" class="btn btn-primary" id="saveEditStaffModal">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteStaffModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Delete Staff</h3>
+      <button type="button" class="modal-close-btn" id="closeDeleteStaffModal">&times;</button>
+    </div>
+
+    <p id="deleteStaffText" style="color:#dfe7f5; margin:0 0 16px;"></p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="cancelDeleteStaffModal">Cancel</button>
+      <button type="button" class="btn btn-danger" id="confirmDeleteStaffModal">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="messageModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="messageModalTitle">Notice</h3>
+      <button type="button" class="modal-close-btn" id="closeMessageModal">&times;</button>
+    </div>
+
+    <p id="messageModalText" style="color:#dfe7f5; margin:0 0 16px;"></p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" id="okMessageModal">OK</button>
+    </div>
+  </div>
+</div>
+
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/admin-create-staff.js"></script>
+</body>
+</html>

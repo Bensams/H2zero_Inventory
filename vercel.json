@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "buildCommand": "npm run vercel-build",
+  "outputDirectory": "Frontend",
+  "framework": null,
+  "redirects": [
+    { "source": "/", "destination": "/pages/index.html", "permanent": false }
+  ]
+}

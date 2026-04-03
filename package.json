@@ -1,0 +1,10 @@
+{
+  "name": "inventory-system",
+  "private": true,
+  "scripts": {
+    "vercel-build": "node scripts/vercel-build.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

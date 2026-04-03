@@ -1,0 +1,9 @@
+.git
+.gitignore
+.cursor
+mcps
+node_modules
+Frontend/node_modules
+*.md
+.env
+.env.*

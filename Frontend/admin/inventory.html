@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Inventory - H2Zero</title>
+  <link rel="stylesheet" href="../assets/css/ui-modern.css">
+  <style>
+    .table-input {
+      width: 100%;
+      min-width: 90px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #ffffff;
+      padding: 0 10px;
+    }
+
+    .stock-hint {
+      display: block;
+      margin-top: 6px;
+      font-size: 11px;
+      color: #b8c5d9;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-card">
+        <div class="brand-logo-wrap">
+          <img src="../assets/images/h2zero-logo.jpg" alt="H2Zero Logo">
+        </div>
+        <div>
+          <h2 class="brand-title">Norland</h2>
+          <p class="brand-subtitle">Bottling Inc.</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+  <a class="nav-link" href="dashboard.html"><span class="nav-label">Dashboard</span></a>
+  <a class="nav-link active" href="inventory.html"><span class="nav-label">Inventory Form</span></a>
+  <a class="nav-link" href="reports.html"><span class="nav-label">Inventory Overview</span></a>
+  <a class="nav-link" href="stocks.html"><span class="nav-label">Stocks Form</span></a>
+  <a class="nav-link" href="stocks-overview.html"><span class="nav-label">Stocks Overview</span></a>
+  <a class="nav-link" href="create-staff.html"><span class="nav-label">Create Staff</span></a>
+</nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <img src="../assets/images/h2zero-logo.jpg" alt="H2Zero Logo" class="topbar-logo">
+          <p class="topbar-title">Norland Inventory Management System</p>
+        </div>
+        <div class="user-pill" id="userPill">Admin</div>
+      </div>
+
+      <div class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Inventory Form</h1>
+            <p class="page-subtitle">Encode the admin inventory form here.</p>
+          </div>
+
+          <div class="header-actions">
+            <div class="role-chip" id="userRoleText">Admin</div>
+            <button class="btn btn-secondary" id="addProductBtn" type="button">+ Add Product</button>
+            <button class="btn btn-primary" id="saveInventoryBtn" type="button">Save</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Admin Inventory Form</h2>
+              <p class="panel-subtitle">One row per product, one column per bottle size.</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="modern-table">
+              <thead>
+                <tr>
+                  <th>Brand / Product</th>
+                  <th>350 ml</th>
+                  <th>500 ml</th>
+                  <th>1000 ml</th>
+                  <th>1500 ml</th>
+                  <th>4000 ml</th>
+                  <th>6000 ml</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="messageModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="messageModalTitle">Notice</h3>
+      <button type="button" class="modal-close-btn" id="closeMessageModal">&times;</button>
+    </div>
+
+    <p id="messageModalText" style="color:#dfe7f5; margin:0 0 16px;"></p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" id="okMessageModal">OK</button>
+    </div>
+  </div>
+</div>
+
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/admin-inventory.js"></script>
+</body>
+</html>

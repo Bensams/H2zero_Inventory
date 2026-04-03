@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - H2Zero</title>
+  <link rel="stylesheet" href="../assets/css/ui-modern.css">
+  <style>
+    .dashboard-compact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .dashboard-bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .chart-panel,
+    .activity-panel {
+      min-height: 360px;
+    }
+
+    .chart-box {
+      height: 285px;
+      padding: 8px 12px 18px;
+    }
+
+    .chart-box canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .compact-table th,
+    .compact-table td {
+      padding: 9px 11px !important;
+      font-size: 13px;
+    }
+
+    .compact-table th {
+      font-size: 11px !important;
+    }
+
+    .pagination-controls {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      max-width: 100%;
+      margin-left: auto;
+    }
+
+    .calendar-picker-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 100%;
+    }
+
+    .calendar-date-text {
+      color: #dfe7f5;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .calendar-icon-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .calendar-icon-btn:hover {
+      background: rgba(255,255,255,0.14);
+    }
+
+    .calendar-icon-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .calendar-native-input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      height: 0;
+    }
+
+    @media (max-width: 1100px) {
+      .dashboard-compact-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dashboard-bottom-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .dashboard-compact-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .page-header {
+        align-items: stretch;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .calendar-picker-wrap {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .calendar-date-text {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-card">
+        <div class="brand-logo-wrap">
+          <img src="../assets/images/h2zero-logo.jpg" alt="H2Zero Logo">
+        </div>
+        <div>
+          <h2 class="brand-title">Norland</h2>
+          <p class="brand-subtitle">Bottling Inc.</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-link active" href="dashboard.html"><span class="nav-label">Dashboard</span></a>
+        <a class="nav-link" href="inventory.html"><span class="nav-label">Inventory Form</span></a>
+        <a class="nav-link" href="reports.html"><span class="nav-label">Inventory Overview</span></a>
+        <a class="nav-link" href="stocks.html"><span class="nav-label">Stocks Form</span></a>
+        <a class="nav-link" href="stocks-overview.html"><span class="nav-label">Stocks Overview</span></a>
+        <a class="nav-link" href="create-staff.html"><span class="nav-label">Create Staff</span></a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <img src="../assets/images/h2zero-logo.jpg" alt="H2Zero Logo" class="topbar-logo">
+          <p class="topbar-title">Norland Inventory Management System</p>
+        </div>
+        <div class="user-pill" id="userPill">Admin</div>
+      </div>
+
+      <div class="page">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Compact overview of inventory, stocks, and recent activity.</p>
+          </div>
+
+          <div class="header-actions">
+            <div class="role-chip" id="userRoleText">Admin</div>
+
+            <div class="calendar-picker-wrap">
+              <span class="calendar-date-text" id="dashboardDateText">March 23, 2026</span>
+
+              <button
+                class="calendar-icon-btn"
+                id="dashboardCalendarBtn"
+                type="button"
+                title="Pick date"
+                aria-label="Pick date"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </button>
+
+              <input type="date" id="dashboardDate" class="calendar-native-input">
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-compact-grid">
+          <div class="card">
+            <p class="card-title">Total Products</p>
+            <p class="card-value" id="totalProducts">0</p>
+            <div class="card-caption">Distinct saved products on selected date</div>
+          </div>
+
+          <div class="card">
+            <p class="card-title">Total Quantity</p>
+            <p class="card-value" id="totalQuantity">0</p>
+            <div class="card-caption">Combined encoded quantity on selected date</div>
+          </div>
+
+          <div class="card">
+            <p class="card-title">Total ML</p>
+            <p class="card-value" id="totalML">0</p>
+            <div class="card-caption">Quantity × bottle size on selected date</div>
+          </div>
+
+          <div class="card">
+            <p class="card-title">Stock Products</p>
+            <p class="card-value" id="stockTotalProducts">0</p>
+            <div class="card-caption">Distinct stock products</div>
+          </div>
+
+          <div class="card">
+            <p class="card-title">Stock Quantity</p>
+            <p class="card-value" id="stockTotalQuantity">0</p>
+            <div class="card-caption">Combined remaining stocks</div>
+          </div>
+
+          <div class="card">
+            <p class="card-title">Stock ML</p>
+            <p class="card-value" id="stockTotalML">0</p>
+            <div class="card-caption">Remaining stock × size</div>
+          </div>
+        </div>
+
+        <div class="dashboard-bottom-grid">
+          <div class="panel chart-panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Inventory Quantity by Product</h2>
+                <p class="panel-subtitle">Based on selected date.</p>
+              </div>
+            </div>
+
+            <div class="chart-box">
+              <canvas id="inventoryChart"></canvas>
+            </div>
+          </div>
+
+          <div class="panel chart-panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Stocks Quantity by Product</h2>
+                <p class="panel-subtitle">Cumulative current stock totals.</p>
+              </div>
+            </div>
+
+            <div class="chart-box">
+              <canvas id="stocksChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel activity-panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Activity Logs</h2>
+              <p class="panel-subtitle">Recent user activity, 5 rows per page.</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="modern-table compact-table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Activity</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="activityTable"></tbody>
+            </table>
+          </div>
+
+          <div class="pagination-controls">
+            <button class="btn btn-secondary" id="prevActivityBtn" type="button">Prev</button>
+            <span class="mini-label" id="activityPageLabel">Page 1 of 1</span>
+            <button class="btn btn-secondary" id="nextActivityBtn" type="button">Next</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/config.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../assets/js/admin-dashboard.js"></script>
+
+  <script>
+    let activityLogs = [];
+    let activityPage = 0;
+    const activityPerPage = 5;
+    let inventoryChartInstance = null;
+    let stocksChartInstance = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const user = await requireAdminPage();
+      if (!user) return;
+
+      setUserLabels(user);
+
+      document.querySelectorAll(".logout-btn").forEach((btn) => {
+        btn.addEventListener("click", handleLogout);
+      });
+
+      const dateInput = document.getElementById("dashboardDate");
+      const dateText = document.getElementById("dashboardDateText");
+      const calendarBtn = document.getElementById("dashboardCalendarBtn");
+
+      if (dateInput) {
+        dateInput.value = getTodayDate();
+        updateDateText(dateInput.value, dateText);
+
+        if (calendarBtn) {
+          calendarBtn.addEventListener("click", () => {
+            if (typeof dateInput.showPicker === "function") {
+              dateInput.showPicker();
+            } else {
+              dateInput.focus();
+              dateInput.click();
+            }
+          });
+        }
+
+        dateInput.addEventListener("change", async () => {
+          updateDateText(dateInput.value, dateText);
+          await loadStatsAndChart();
+          await loadActivityLogs();
+        });
+      }
+
+      document.getElementById("prevActivityBtn").addEventListener("click", prevActivityPage);
+      document.getElementById("nextActivityBtn").addEventListener("click", nextActivityPage);
+
+      await loadStatsAndChart();
+      await loadActivityLogs();
+    });
+
+    function getTodayDate() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatDateLong(dateString) {
+      if (!dateString) return "";
+
+      const parts = dateString.split("-");
+      if (parts.length !== 3) return dateString;
+
+      const year = Number(parts[0]);
+      const month = Number(parts[1]) - 1;
+      const day = Number(parts[2]);
+      const date = new Date(year, month, day);
+
+      return date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      });
+    }
+
+    function updateDateText(dateValue, targetElement) {
+      if (!targetElement) return;
+      targetElement.textContent = formatDateLong(dateValue);
+    }
+
+    function getSelectedDashboardDate() {
+      const input = document.getElementById("dashboardDate");
+      return input && input.value ? input.value : getTodayDate();
+    }
+
+    async function loadStatsAndChart() {
+      try {
+        const selectedDate = getSelectedDashboardDate();
+
+        const statsRes = await apiRequest(
+          `${API_ENDPOINTS.dashboardStats}&date=${encodeURIComponent(selectedDate)}`,
+          { method: "GET" }
+        );
+
+        if (statsRes.success && statsRes.data) {
+          document.getElementById("totalProducts").textContent = statsRes.data.total_products ?? 0;
+          document.getElementById("totalQuantity").textContent = statsRes.data.total_quantity ?? 0;
+          document.getElementById("totalML").textContent = Number(statsRes.data.total_ml ?? 0).toLocaleString();
+
+          document.getElementById("stockTotalProducts").textContent = statsRes.data.stock_total_products ?? 0;
+          document.getElementById("stockTotalQuantity").textContent = Number(statsRes.data.stock_total_quantity ?? 0).toLocaleString();
+          document.getElementById("stockTotalML").textContent = Number(statsRes.data.stock_total_ml ?? 0).toLocaleString();
+
+          renderStocksChart(statsRes.data.stocks_overview ?? []);
+        } else {
+          document.getElementById("totalProducts").textContent = "0";
+          document.getElementById("totalQuantity").textContent = "0";
+          document.getElementById("totalML").textContent = "0";
+          document.getElementById("stockTotalProducts").textContent = "0";
+          document.getElementById("stockTotalQuantity").textContent = "0";
+          document.getElementById("stockTotalML").textContent = "0";
+          renderStocksChart([]);
+        }
+
+        const inventoryRes = await apiRequest(
+          `${API_ENDPOINTS.inventoryList}&date=${encodeURIComponent(selectedDate)}`,
+          { method: "GET" }
+        );
+
+        if (!inventoryRes.success || !Array.isArray(inventoryRes.data) || inventoryRes.data.length === 0) {
+          renderInventoryChart({});
+          return;
+        }
+
+        const productQtyMap = {};
+
+        inventoryRes.data.forEach((item) => {
+          const name = item.item_name || "Unknown";
+          const qty = parseInt(item.quantity, 10) || 0;
+
+          if (!productQtyMap[name]) {
+            productQtyMap[name] = 0;
+          }
+          productQtyMap[name] += qty;
+        });
+
+        renderInventoryChart(productQtyMap);
+      } catch (error) {
+        console.error("loadStatsAndChart error:", error);
+
+        document.getElementById("totalProducts").textContent = "0";
+        document.getElementById("totalQuantity").textContent = "0";
+        document.getElementById("totalML").textContent = "0";
+        document.getElementById("stockTotalProducts").textContent = "0";
+        document.getElementById("stockTotalQuantity").textContent = "0";
+        document.getElementById("stockTotalML").textContent = "0";
+
+        renderInventoryChart({});
+        renderStocksChart([]);
+      }
+    }
+
+    function renderInventoryChart(productQtyMap) {
+      const canvas = document.getElementById("inventoryChart");
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      const labels = Object.keys(productQtyMap);
+      const values = Object.values(productQtyMap);
+
+      if (inventoryChartInstance) {
+        inventoryChartInstance.destroy();
+      }
+
+      inventoryChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{
+            label: "Quantity",
+            data: values,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: "#dfe7f5" }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: "#dfe7f5" },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: { color: "#dfe7f5" },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            }
+          }
+        }
+      });
+    }
+
+    function renderStocksChart(items) {
+      const canvas = document.getElementById("stocksChart");
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      const labels = [];
+      const values = [];
+
+      (items || []).forEach((item) => {
+        labels.push(item.product_name || "Unknown");
+        values.push(Number(item.total_quantity || 0));
+      });
+
+      if (stocksChartInstance) {
+        stocksChartInstance.destroy();
+      }
+
+      stocksChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{
+            label: "Stocks",
+            data: values,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: "#dfe7f5" }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: "#dfe7f5" },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: { color: "#dfe7f5" },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            }
+          }
+        }
+      });
+    }
+
+    async function loadActivityLogs() {
+      try {
+        const selectedDate = getSelectedDashboardDate();
+        const res = await apiRequest(
+          `${API_ENDPOINTS.reportsActivity}&date=${encodeURIComponent(selectedDate)}`,
+          { method: "GET" }
+        );
+
+        if (!res.success || !Array.isArray(res.data)) {
+          activityLogs = [];
+          renderActivityLogs();
+          return;
+        }
+
+        activityLogs = res.data;
+        activityPage = 0;
+        renderActivityLogs();
+      } catch (error) {
+        console.error("loadActivityLogs error:", error);
+        activityLogs = [];
+        renderActivityLogs();
+      }
+    }
+
+    function renderActivityLogs() {
+      const tbody = document.getElementById("activityTable");
+      const label = document.getElementById("activityPageLabel");
+      const prevBtn = document.getElementById("prevActivityBtn");
+      const nextBtn = document.getElementById("nextActivityBtn");
+
+      tbody.innerHTML = "";
+
+      if (!activityLogs.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="3" style="text-align:center;color:#b8c5d9;">No activity logs found.</td>
+          </tr>
+        `;
+        label.textContent = "Page 0 of 0";
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return;
+      }
+
+      const start = activityPage * activityPerPage;
+      const items = activityLogs.slice(start, start + activityPerPage);
+
+      items.forEach((log) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${escapeHtml(log.full_name ?? "-")}</td>
+          <td>${escapeHtml(log.description ?? "-")}</td>
+          <td>${escapeHtml(log.created_at ?? "-")}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const totalPages = Math.ceil(activityLogs.length / activityPerPage);
+      label.textContent = `Page ${activityPage + 1} of ${totalPages}`;
+      prevBtn.disabled = activityPage === 0;
+      nextBtn.disabled = activityPage >= totalPages - 1;
+    }
+
+    function nextActivityPage() {
+      const totalPages = Math.ceil(activityLogs.length / activityPerPage);
+      if (activityPage < totalPages - 1) {
+        activityPage++;
+        renderActivityLogs();
+      }
+    }
+
+    function prevActivityPage() {
+      if (activityPage > 0) {
+        activityPage--;
+        renderActivityLogs();
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>

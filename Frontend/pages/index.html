@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>H2Zero Login</title>
+  <link rel="stylesheet" href="../assets/css/ui-modern.css">
+  <style>
+    .login-wrapper {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    .login-container {
+      display: flex;
+      width: 900px;
+      max-width: 95%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 30px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.28);
+      overflow: hidden;
+    }
+
+    .login-left {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .login-title {
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin: 0;
+    }
+
+    .login-sub {
+      margin: 10px 0 30px;
+      color: #b8c5d9;
+      font-size: 15px;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-right {
+      width: 360px;
+      background:
+        radial-gradient(circle at top right, rgba(92,225,198,0.15), transparent 40%),
+        radial-gradient(circle at bottom left, rgba(47,196,222,0.15), transparent 40%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      border-left: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .logo-box {
+      width: 120px;
+      height: 120px;
+      background: white;
+      border-radius: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .logo-box img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+    }
+
+    .system-title {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      margin: 0;
+    }
+
+    .system-sub {
+      margin-top: 10px;
+      text-align: center;
+      color: #b8c5d9;
+      font-size: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      color: #dfe7f5;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .field {
+      width: 100%;
+      height: 50px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: #ffffff;
+      padding: 0 16px;
+      outline: none;
+    }
+
+    .field::placeholder {
+      color: #8fa2c0;
+    }
+
+    select.field option {
+      color: #ffffff;
+      background: #14233f;
+    }
+
+    .login-btn {
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    .form-message {
+      min-height: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #ff8080;
+    }
+
+    @media (max-width: 900px) {
+      .login-container {
+        flex-direction: column;
+      }
+
+      .login-right {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid rgba(255,255,255,0.1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-container">
+      <div class="login-left">
+        <h1 class="login-title">Login</h1>
+        <p class="login-sub">Access the Norland inventory system</p>
+
+        <form id="loginForm" class="login-form">
+          <div class="form-group">
+            <label for="username">Gmail</label>
+            <input
+              class="field"
+              type="email"
+              id="username"
+              placeholder="example@gmail.com"
+              autocomplete="username"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              class="field"
+              type="password"
+              id="password"
+              placeholder="Enter password"
+              autocomplete="current-password"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="role">Login As</label>
+            <select class="field" id="role" required>
+              <option value="">Select role</option>
+              <option value="admin">Admin</option>
+              <option value="staff">Staff</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary login-btn" type="submit">Login</button>
+          <div id="loginMessage" class="form-message"></div>
+        </form>
+      </div>
+
+      <div class="login-right">
+        <div class="logo-box">
+          <img src="../assets/images/h2zero-logo.jpg" alt="H2Zero Logo">
+        </div>
+
+        <h2 class="system-title">Norland</h2>
+        <p class="system-sub">Inventory Management System</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+</body>
+</html>
