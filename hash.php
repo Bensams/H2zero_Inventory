@@ -1,9 +1,12 @@
 <?php
 /**
- * Generate a bcrypt hash for the database `users.password` column.
+ * CLI: generate a bcrypt hash for users.password (same algorithm as the API).
  *
- * Change $plain below to your desired password, run: php hash.php
- * Log in with that exact string (no $ prefix unless it is part of your password).
+ *   php hash.php
+ *
+ * Edit $plain below, run the script, paste the output into SQL or use bootstrap/signup APIs.
  */
+require_once __DIR__ . '/Backend/helpers/password.php';
+
 $plain = 'admin123';
-echo password_hash($plain, PASSWORD_DEFAULT);
+echo auth_password_hash($plain) . PHP_EOL;

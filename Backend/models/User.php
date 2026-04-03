@@ -1,4 +1,7 @@
 <?php
+
+require_once __DIR__ . '/../helpers/password.php';
+
 class User {
     private PDO $conn;
     private string $table = "users";
@@ -12,7 +15,7 @@ class User {
                 VALUES (:full_name, :username, :password, :role, NOW())";
 
         $stmt = $this->conn->prepare($sql);
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $hashedPassword = auth_password_hash($password);
 
         return $stmt->execute([
             ':full_name' => $full_name,

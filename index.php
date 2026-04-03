@@ -6,6 +6,8 @@ require_once __DIR__ . '/Backend/config/cors.php';
 session_start();
 
 require_once __DIR__ . '/Backend/config/constants.php';
+require_once __DIR__ . '/Backend/config/ensure_default_admin.php';
+inventory_ensure_default_admin();
 
 $route = $_GET['route'] ?? '';
 

@@ -159,6 +159,33 @@ The UI calls the API with `fetch(..., credentials: "include")`, so the API must 
 
 ---
 
+## Default administrator (auto-seed)
+
+On the **first** HTTP request to the API (after the database is reachable), if there is **no** user with `role = 'admin'`, the app inserts:
+
+- **Email:** `admin@gmail.com`  
+- **Password:** `admin123` (bcrypt)  
+- **Full name:** `Administrator`  
+- **Role:** `admin`  
+
+Set **`DISABLE_AUTO_ADMIN=1`** on the server to turn this off (recommended once you rely on your own admin only).
+
+---
+
+## Account registration (API)
+
+Passwords are stored as **bcrypt** (`PASSWORD_BCRYPT`, cost 12) via `Backend/helpers/password.php`.
+
+| Action | URL | Auth | When |
+|--------|-----|------|------|
+| **Bootstrap admin** | `POST index.php?route=auth&action=bootstrap` | None | Only while **`users` has zero rows**. Body: JSON `full_name`, `username` (Gmail) or `email`, `password` (min 6 chars); optional `age`, `gender`. Creates **admin**. |
+| **Public staff signup** | `POST index.php?route=auth&action=signup` | None | Requires **`ALLOW_PUBLIC_STAFF_SIGNUP=1`** on the API service. Same fields as bootstrap; creates **staff**. |
+| **Admin creates staff** | `POST index.php?route=auth&action=register` | Admin session | Existing flow; bcrypt hashed. |
+
+Generate a hash from the CLI: `php hash.php` (edit `$plain` in `hash.php` first).
+
+---
+
 ## Reference files
 
 - `schema.sql` — MySQL DDL for all application tables (fresh install).

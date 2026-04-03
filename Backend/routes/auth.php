@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../helpers/response.php';
 require_once __DIR__ . '/../helpers/utils.php';
+require_once __DIR__ . '/../helpers/password.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -54,14 +55,17 @@ if ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         jsonResponse(false, "Invalid username or password.", null, 401);
     }
 
-    $hash = $user['password'];
-    $passwordOk = password_verify($password, $hash);
-    if (!$passwordOk && strlen($password) > 1 && $password[0] === '$') {
-        $passwordOk = password_verify(substr($password, 1), $hash);
+    $plainOk = auth_plain_that_verified($password, $user['password']);
+    if ($plainOk === null) {
+        jsonResponse(false, "Invalid username or password.", null, 401);
     }
 
-    if (!$passwordOk) {
-        jsonResponse(false, "Invalid username or password.", null, 401);
+    if (auth_password_needs_rehash($user['password'])) {
+        $upd = $db->prepare('UPDATE users SET password = :password, updated_at = NOW() WHERE id = :id');
+        $upd->execute([
+            ':password' => auth_password_hash($plainOk),
+            ':id' => $user['id'],
+        ]);
     }
 
     $_SESSION['user'] = [
@@ -89,6 +93,131 @@ if ($action === 'me' && $_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 
     jsonResponse(true, "Current user fetched.", $_SESSION['user']);
+}
+
+/**
+ * First-time setup: create the only administrator when users table is empty.
+ * POST JSON: full_name, username (Gmail) or email, password; optional age, gender.
+ */
+if ($action === 'bootstrap' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $countStmt = $db->query('SELECT COUNT(*) AS c FROM users');
+    $countRow = $countStmt->fetch(PDO::FETCH_ASSOC);
+    if ((int) ($countRow['c'] ?? 0) > 0) {
+        jsonResponse(false, 'Bootstrap is only allowed when there are no users yet.', null, 403);
+    }
+
+    $data = getRequestData();
+    $full_name = trim($data['full_name'] ?? '');
+    $email = strtolower(trim($data['username'] ?? $data['email'] ?? ''));
+    $password = trim($data['password'] ?? '');
+
+    if ($full_name === '' || $email === '' || $password === '') {
+        jsonResponse(false, 'Full name, Gmail, and password are required.', null, 422);
+    }
+
+    if (!isValidGmail($email)) {
+        jsonResponse(false, 'Please enter a valid Gmail address ending in @gmail.com.', null, 422);
+    }
+
+    if (strlen($password) < 6) {
+        jsonResponse(false, 'Password must be at least 6 characters.', null, 422);
+    }
+
+    $age = isset($data['age']) && $data['age'] !== '' ? (int) $data['age'] : null;
+    $gender = trim($data['gender'] ?? '');
+    $username = extractUsernameFromEmail($email);
+    $hashedPassword = auth_password_hash($password);
+
+    $stmt = $db->prepare("
+        INSERT INTO users (
+            full_name, age, gender, username, email, password, role, created_at, updated_at
+        )
+        VALUES (
+            :full_name, :age, :gender, :username, :email, :password, 'admin', NOW(), NOW()
+        )
+    ");
+
+    $saved = $stmt->execute([
+        ':full_name' => $full_name,
+        ':age' => $age,
+        ':gender' => $gender !== '' ? $gender : null,
+        ':username' => $username,
+        ':email' => $email,
+        ':password' => $hashedPassword,
+    ]);
+
+    if (!$saved) {
+        jsonResponse(false, 'Failed to create administrator.', null, 500);
+    }
+
+    jsonResponse(true, 'Administrator created. You can log in now.', ['role' => 'admin']);
+}
+
+/**
+ * Public staff self-registration (writes only via prepared INSERT).
+ * Enable on the server with ALLOW_PUBLIC_STAFF_SIGNUP=1
+ */
+if ($action === 'signup' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (getenv('ALLOW_PUBLIC_STAFF_SIGNUP') !== '1') {
+        jsonResponse(
+            false,
+            'Public staff signup is disabled. Set ALLOW_PUBLIC_STAFF_SIGNUP=1 on the API service to enable.',
+            null,
+            403
+        );
+    }
+
+    $data = getRequestData();
+    $full_name = trim($data['full_name'] ?? '');
+    $email = strtolower(trim($data['username'] ?? $data['email'] ?? ''));
+    $password = trim($data['password'] ?? '');
+    $age = isset($data['age']) && $data['age'] !== '' ? (int) $data['age'] : null;
+    $gender = trim($data['gender'] ?? '');
+
+    if ($full_name === '' || $email === '' || $password === '') {
+        jsonResponse(false, 'Full name, Gmail, and password are required.', null, 422);
+    }
+
+    if (!isValidGmail($email)) {
+        jsonResponse(false, 'Please enter a valid Gmail address ending in @gmail.com.', null, 422);
+    }
+
+    if (strlen($password) < 6) {
+        jsonResponse(false, 'Password must be at least 6 characters.', null, 422);
+    }
+
+    $check = $db->prepare('SELECT id FROM users WHERE LOWER(email) = :email LIMIT 1');
+    $check->execute([':email' => $email]);
+    if ($check->fetch()) {
+        jsonResponse(false, 'Gmail already exists.', null, 409);
+    }
+
+    $username = extractUsernameFromEmail($email);
+    $hashedPassword = auth_password_hash($password);
+
+    $stmt = $db->prepare("
+        INSERT INTO users (
+            full_name, age, gender, username, email, password, role, created_at, updated_at
+        )
+        VALUES (
+            :full_name, :age, :gender, :username, :email, :password, 'staff', NOW(), NOW()
+        )
+    ");
+
+    $saved = $stmt->execute([
+        ':full_name' => $full_name,
+        ':age' => $age,
+        ':gender' => $gender !== '' ? $gender : null,
+        ':username' => $username,
+        ':email' => $email,
+        ':password' => $hashedPassword,
+    ]);
+
+    if (!$saved) {
+        jsonResponse(false, 'Failed to create account.', null, 500);
+    }
+
+    jsonResponse(true, 'Staff account created. You can log in now.', ['role' => 'staff']);
 }
 
 if ($action === 'register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -129,7 +258,7 @@ if ($action === 'register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $username = extractUsernameFromEmail($email);
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    $hashedPassword = auth_password_hash($password);
 
     $stmt = $db->prepare("
         INSERT INTO users (
@@ -334,7 +463,7 @@ if ($action === 'reset-staff-password' && $_SERVER['REQUEST_METHOD'] === 'PUT') 
         jsonResponse(false, "Staff account not found.", null, 404);
     }
 
-    $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
+    $hashedPassword = auth_password_hash($new_password);
 
     $stmt = $db->prepare("
         UPDATE users

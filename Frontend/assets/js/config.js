@@ -5,6 +5,11 @@ const API_ENDPOINTS = {
   logout: `${API_BASE_URL}?route=auth&action=logout`,
   me: `${API_BASE_URL}?route=auth&action=me`,
 
+  /** First admin when database has zero users (no auth). */
+  bootstrapAdmin: `${API_BASE_URL}?route=auth&action=bootstrap`,
+  /** Public staff signup; requires ALLOW_PUBLIC_STAFF_SIGNUP=1 on API. */
+  signupStaff: `${API_BASE_URL}?route=auth&action=signup`,
+
   registerStaff: `${API_BASE_URL}?route=auth&action=register`,
   staffList: `${API_BASE_URL}?route=auth&action=staff-list`,
   editStaff: `${API_BASE_URL}?route=auth&action=edit-staff`,
