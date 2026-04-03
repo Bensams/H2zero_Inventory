@@ -50,7 +50,17 @@ if ($action === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$user || !password_verify($password, $user['password'])) {
+    if (!$user) {
+        jsonResponse(false, "Invalid username or password.", null, 401);
+    }
+
+    $hash = $user['password'];
+    $passwordOk = password_verify($password, $hash);
+    if (!$passwordOk && strlen($password) > 1 && $password[0] === '$') {
+        $passwordOk = password_verify(substr($password, 1), $hash);
+    }
+
+    if (!$passwordOk) {
         jsonResponse(false, "Invalid username or password.", null, 401);
     }
 
